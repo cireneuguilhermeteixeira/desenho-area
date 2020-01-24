@@ -17,16 +17,24 @@ export class AppComponent {
   ngOnInit(){
 
     const DELETE = 46;
-    let canvas = new fabric.Canvas("c");
+    let canvas = new fabric.Canvas("c",{selection:false});
     let finishedArea = false;
     let circles = Array();
     let points = Array();
     let optionsPolygon = {
       selectable: true,
       objectCaching: false,
+      fill: 'rgba(0,0,0,.3)',
       hasBorders: false,
-      hasControls: false
+      hasControls: false,
     };
+    let imageUrl = "https://www.detran.rs.gov.br/upload/recortes/201908/19160730_237506_GD.jpg";
+    canvas.setBackgroundImage(imageUrl, canvas.renderAll.bind(canvas), {
+      // Optionally add an opacity lvl to the image
+      backgroundImageOpacity: 0.5,
+      // should the image be resized to fit the container?
+      backgroundImageStretch: false
+    });
 
     let polygon = new fabric.Polygon(points,optionsPolygon);
 
@@ -34,7 +42,7 @@ export class AppComponent {
       let p = options.pointer;      
       if(points.length < 4){
         circles.push (new fabric.Circle({
-          radius: 8,
+          radius: 5,
           fill: 'green',
           left: p.x,
           top: p.y,
@@ -52,6 +60,7 @@ export class AppComponent {
         polygon = new fabric.Polygon(points,optionsPolygon);
         polygon.lockScalingX = true;
         polygon.lockScalingY = true;
+        polygon.lockRotation = true;
         canvas.add(polygon);
       }
     })
@@ -60,7 +69,7 @@ export class AppComponent {
 
     points.forEach(function(point, index) {
       circles.push (new fabric.Circle({
-        radius: 8,
+        radius: 5,
         fill: 'green',
         left: point.x,
         top: point.y,
@@ -77,7 +86,9 @@ export class AppComponent {
     canvas.on('object:moving', function (options) {
       let objType = options.target.get('type');
       let p = options.target;
-      if(objType == 'polygon'){
+      console.log(objType);
+      
+      if(objType == 'polygon' || objType == 'activeSelection'){
           let firstPoint = {x: p.left, y: p.top };          
           
            points = [
@@ -106,7 +117,7 @@ export class AppComponent {
 
           points.forEach(function(point, index) {
             circles.push (new fabric.Circle({
-              radius: 8,
+              radius: 5,
               fill: 'green',
               left: point.x,
               top: point.y,
